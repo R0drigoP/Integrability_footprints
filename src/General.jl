@@ -36,6 +36,10 @@ function rand_GUE(n)::Matrix{ComplexF64}
     return M
 end
 
+function rand_GinUE(N)
+    return randn(ComplexF64, N, N)/sqrt(N)
+end
+
 function KrausMap(M, N) # Generates M matrices N x N
     Gin = randn(ComplexF64, M*N, N)
     Q, R = qr(Gin)
@@ -74,7 +78,25 @@ function kth_NN(data, k=1)
     return k_NN
 end
 
-function rand_GinUE(N)
-    return randn(ComplexF64, N, N)/sqrt(N)
-end
+# Nearest neighbour of data1 in data2
+function find_nearest_neighbors_complex(data1::Vector{<:Complex}, data2::Vector{<:Complex})
+    
+    points1 = hcat(real(data1), imag(data1))' .|> Float64   # Each column is a 2D point
+    points2 = hcat(real(data2), imag(data2))' .|> Float64
 
+
+    tree = KDTree(points2)
+    
+    nearest_indices = Array{Int64, 1}(undef, length(data1))
+    nearest_distances = Array{Float64, 1}(undef, length(data1))
+
+
+    for i in 1:length(data1)
+        query_point = points1[:, i]
+        idx, dist = knn(tree, query_point, 1)  # find the nearest neighbor
+        nearest_indices[i] = idx[1]            # store the index of the nearest neighbor
+        nearest_distances[i] = dist[1]         # store the distance to the nearest neighbor
+    end
+
+    return nearest_indices, nearest_distances
+end
