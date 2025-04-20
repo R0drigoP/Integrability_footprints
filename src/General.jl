@@ -66,7 +66,6 @@ function kth_NN(data, k=1)
     kdtree = KDTree(points)
     idxs, dists = knn(kdtree, points, k+1, true)
 
-    #display(idxs[1][1])
     
     for i in 1:N
         k_NN[i] = idxs[i][k+1]
@@ -74,31 +73,6 @@ function kth_NN(data, k=1)
     
     return k_NN
 end
-
-# Nearest neighbour of data1 in data2
-function find_nearest_neighbors_complex(data1::Vector{<:Complex}, data2::Vector{<:Complex})
-    # Convert complex numbers to 2D points (real and imaginary parts as Float64)
-    points1 = hcat(real(data1), imag(data1))' .|> Float64   # Each column is a 2D point
-    points2 = hcat(real(data2), imag(data2))' .|> Float64
-
-    # Build a KDTree from points2
-    tree = KDTree(points2)
-    
-    # Prepare arrays to store nearest neighbor indices and distances
-    nearest_indices = Array{Int64, 1}(undef, length(data1))
-    nearest_distances = Array{Float64, 1}(undef, length(data1))
-
-    # For each point in data1, find the nearest neighbor in data2
-    for i in 1:length(data1)
-        query_point = points1[:, i]
-        idx, dist = knn(tree, query_point, 1)  # find the nearest neighbor
-        nearest_indices[i] = idx[1]            # store the index of the nearest neighbor
-        nearest_distances[i] = dist[1]         # store the distance to the nearest neighbor
-    end
-
-    return nearest_indices, nearest_distances
-end
-
 
 function rand_GinUE(N)
     return randn(ComplexF64, N, N)/sqrt(N)
