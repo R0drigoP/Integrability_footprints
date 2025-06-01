@@ -293,3 +293,32 @@ function DilutedUnitaryClifford(M, L, p=0, alpha=0)
         
     return (1-p)*kron(noise*U, conj(noise*U)) + p*K
 end
+
+function count_clusters_Clifford(ev::Vector{ComplexF64}, tol::Float64 = 0.001)
+    unique_vals = ComplexF64[]
+    for val in ev
+        if all(abs(val - u) > tol for u in unique_vals)
+            push!(unique_vals, val)
+        end
+    end
+    return length(unique_vals)
+end
+
+# Return nothing if we cannot find any Clifford with desired number of clusters
+function n_cluster_Clifford(L::Int, n::Int, max_it::Int = 100)
+
+    it = 0
+    while it < max_it
+
+        U = rand_Clifford(L)
+        ev = eigvals(U)
+        
+        if count_clusters_Clifford(ev) == n
+            return U
+        end
+            
+        it += 1
+    end
+
+    return nothing
+end
