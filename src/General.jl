@@ -100,3 +100,44 @@ function find_nearest_neighbors_complex(data1::Vector{<:Complex}, data2::Vector{
 
     return nearest_indices, nearest_distances
 end
+
+# Input map
+function complex_spacing_ratio(map::Matrix{ComplexF64})
+    ev = eigvals(map)
+    
+    nearest_neighbors = kth_NN(ev, 1)
+    second_nearest_neighbors = kth_NN(ev, 2)
+
+    z = similar(ev)
+
+    for i in 1:length(ev)
+
+        lambda = ev[i]
+        NN = ev[nearest_neighbors[i]]
+        NNN = ev[second_nearest_neighbors[i]]
+        
+        z[i] = (NN - lambda) / (NNN - lambda)
+    end
+
+    return z
+end
+
+# Input eigenvalues
+function complex_spacing_ratio(ev::Array{ComplexF64})
+    
+    nearest_neighbors = kth_NN(ev, 1)
+    second_nearest_neighbors = kth_NN(ev, 2)
+
+    z = similar(ev)
+
+    for i in 1:length(ev)
+
+        lambda = ev[i]
+        NN = ev[nearest_neighbors[i]]
+        NNN = ev[second_nearest_neighbors[i]]
+        
+        z[i] = (NN - lambda) / (NNN - lambda)
+    end
+
+    return z
+end
